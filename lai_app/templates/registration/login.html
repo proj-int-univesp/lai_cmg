@@ -1,0 +1,51 @@
+<!-- templates/registration/login.html -->
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Sistema de Acesso a Informações Públicas</title>
+    <!-- Link para o Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="bg-dark text-light">
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4 rounded-4" style="min-width: 350px; max-width: 400px; width: 100%;">
+        <h2 class="text-center mb-4 text-primary">Sistema de Acesso a Informações Públicas</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label text-dark" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field|add_class:"form-control rounded-pill px-3 py-2 shadow-sm border-secondary" }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 mt-2 shadow">Autenticar-se</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="{% url 'registrar_cidadao' %}" class="text-decoration-none text-primary">Registrar-se como Cidadão</a>
+        </div>
+    </div>
+</div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

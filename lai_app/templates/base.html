@@ -1,0 +1,93 @@
+<!-- templates/abon_app/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}SisAIP - Sistema de Acesso a Informações Públicas{% endblock %}</title>
+    <!-- Link para o Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="bg-dark text-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'menu' %}">Sistema de Acesso a Informações Públicas</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">                
+
+                <ul class="navbar-nav">
+
+                    {% if user.funcionario.tem_cargo_comum %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="m-abonadasDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Minhas Abonadas</a>
+                        <ul class="dropdown-menu" aria-labelledby="m-abonadasDropdown">
+                            <li><a class="dropdown-item" href="{% url 'req_abonada' %}">Requerer</a></li>
+                            <li><a class="dropdown-item" href="{% url 'abonadas_cancelamento' %}">Cancelar</a></li>
+                            <li><a class="dropdown-item" href="{% url 'abonadas_anual' %}">Consultar</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    {% if user.funcionario.tem_cargo_chefia %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="m-equipeDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Minha Equipe</a>
+                        <ul class="dropdown-menu" aria-labelledby="m-equipeDropdown">
+                            <li><a class="dropdown-item" href="{% url 'abonadas_despacho' %}">Despachar Requerimentos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'abonadas_futuras' %}">Abonadas Futuras</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    {% if user.funcionario.faz_gestao_pessoas %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="g-pessoasDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Gestão de Pessoas</a>
+                        <ul class="dropdown-menu" aria-labelledby="g-pessoasDropdown">
+                            <li><a class="dropdown-item" href="{% url 'abonadas_arquivamento' %}">Registrar e Arquivar</a></li>
+                            <li><a class="dropdown-item" href="{% url 'abonadas_geral' %}">Visão Geral</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sol_rel_abon_periodo' %}">Relatório por Período</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/">Configurações</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link" >
+                                    Sair
+                                </button>
+                            </form>
+                        </li>
+                    {% endif %}
+                </ul>              
+
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+          $('.dropdown-toggle').dropdown();
+        }); 
+    </script>
+</body>
+</html>

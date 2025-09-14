@@ -1,0 +1,19 @@
+<!-- templates/abon_app/menu.html -->
+{% extends "base.html" %}
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<h1 style="text-align: center;">
+    Olá, 
+    {% if user.funcionario %}
+        {{ user.funcionario.nome }}
+    {% elif user.cidadao %}
+        {{ user.cidadao.nome }}
+    {% else %}
+        Usuário
+    {% endif %}!
+</h1>
+{% endblock %}
