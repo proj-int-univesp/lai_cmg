@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Cidadao
+from .models import Cidadao, PedidoInformacao
 
 class CidadaoForm(forms.ModelForm):
     username = forms.CharField(max_length=150, label="Nome de Usuário")
@@ -35,3 +35,36 @@ class CidadaoForm(forms.ModelForm):
         if commit:
             cidadao.save()
         return cidadao
+
+class AnaliseInicialForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['setor_info']
+
+class FornecInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['arquivo_info', 'observacoes_forn']
+
+class ParecerPedInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['parecer']
+
+class ReqInformacaoForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['titulo', 'descricao']
+        widgets = {
+            'descricao': forms.Textarea(attrs={'rows': 5, 'cols': 40}),
+        }
+
+class RespostaPedInfoForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['resp_inicial', 'just_resp_inicial']

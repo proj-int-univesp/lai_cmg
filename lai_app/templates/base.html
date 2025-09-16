@@ -20,6 +20,36 @@
 
                 <ul class="navbar-nav">
 
+                    {% if user.cidadao %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'req_info' %}">Requerer Informação</a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.funcionario.analisa_ped_info %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_analise' %}">Analisar Pedidos</a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.funcionario %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_fornecimento' %}">Fornecer Informações</a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.funcionario.emite_parecer %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_parecer' %}">Emitir Pareceres</a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.funcionario.responde_ped_info %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_resposta' %}">Responder Pedidos</a>
+                        </li>
+                    {% endif %}                     
+
                     {% if user.funcionario.tem_cargo_comum %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="m-abonadasDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Minhas Abonadas</a>

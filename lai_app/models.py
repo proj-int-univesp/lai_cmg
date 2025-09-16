@@ -92,13 +92,26 @@ class Funcionario(models.Model):
     credenciais = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null= True,
                                        verbose_name="Credenciais de Acesso")
            
-    """ def faz_gestao_pessoas(self):
+    def analisa_ped_info(self):
 
-        if self.lotacao != Configuracao.objects.get(id=1).setor_gestao_pessoas:
+        if self.lotacao != Configuracao.objects.get(id=1).setor_adm:
             return False
         
-        return True """
+        return True
+    
+    def emite_parecer(self):
+
+        if self.lotacao != Configuracao.objects.get(id=1).setor_parecer:
+            return False
         
+        return True
+    
+    def responde_ped_info(self):
+
+        if self.lotacao != Configuracao.objects.get(id=1).setor_resposta:
+            return False
+        
+        return True
 
     def __str__(self):
         return self.nome + " (" + self.matricula + ")"
@@ -148,9 +161,9 @@ class PedidoInformacao(models.Model):
     # Campos da Criação do Pedido de Informação
     num_registro = models.PositiveIntegerField(unique_for_year=True, 
                                                verbose_name="Número de Registro")
-    titulo = models.CharField(max_length=100)
-    descricao = models.TextField()
-    data_pedido = models.DateTimeField(auto_now_add=True)
+    titulo = models.CharField(max_length=100, verbose_name="Título")
+    descricao = models.TextField(verbose_name="Descrição")
+    data_pedido = models.DateTimeField(auto_now_add=True, verbose_name="Data do Pedido")
     requerente = models.ForeignKey('Cidadao', on_delete=models.PROTECT, 
                                    related_name='cid_req', verbose_name="Requerente")
 
@@ -168,7 +181,7 @@ class PedidoInformacao(models.Model):
     arquivo_info = models.FileField(upload_to='documentos/', 
                                     verbose_name="Caminho do Arquivo", 
                                     blank=True, null=True)
-    observacoes_forn = models.TextField(blank=True, null=True)
+    observacoes_forn = models.TextField(blank=True, null=True, verbose_name="Observações")
     data_fornec = models.DateTimeField(blank=True, null=True, 
                                       verbose_name="Data de Fornecimento da Informação")
     func_fornec = models.ForeignKey('Funcionario', on_delete=models.PROTECT, 
@@ -185,9 +198,9 @@ class PedidoInformacao(models.Model):
 
     # Campos do Setor de Resposta
     resp_inicial = models.BooleanField(default=False, # Se False significa "Indeferido", casos contrários "Deferido"
-                                       verbose_name="Resposta Inicial")
+                                       verbose_name="Pedido Deferido?")
     just_resp_inicial = models.TextField(blank=True, null=True,
-                                         verbose_name="Justificativa da Resposta Inicial")
+                                         verbose_name="Justificativa")
     data_resp_inicial = models.DateTimeField(blank=True, null=True,
                                             verbose_name="Data da Resposta Inicial")
     func_resp_inicial = models.ForeignKey('Funcionario', on_delete=models.PROTECT,

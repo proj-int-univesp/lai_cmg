@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Detalhes do Pedido de Informações{% endblock %}
+{% block content %}
+
+<br>
+<div class="row">
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">
+        <div class="card-header bg-primary">
+            <h4><strong>Pedido de Informações nº {{ped_info.num_registro}}/{{ped_info.data_pedido|date:'Y'}}</strong></h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Data do Pedido:</strong> {{ped_info.data_pedido}}</p>
+            <p><strong>Requerente:</strong> {{ped_info.requerente.nome}}</p>
+            <p><strong>Título:</strong> {{ped_info.titulo}}</p>
+            <p><strong>Descrição:</strong> {{ped_info.descricao}}</p>
+            <p><strong>Situação:</strong> {{ped_info.get_situacao_display}}</p>
+        </div>
+    </div>
+</div>
+</div>
+<br>
+
+<!--
+<div class="row">
+{% if req.momento_despacho %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">
+        {% if req.despacho %} 
+        <div class="card-header text-white bg-success">
+        {% else %}
+        <div class="card-header text-white bg-danger">
+        {% endif %}
+            <h4><strong>Despacho: {{req.despacho|yesno:"Deferido, Indeferido"}}</strong></h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Data do Despacho:</strong> {{req.momento_despacho}}</p>
+            <p><strong>Justificativa:</strong> {{req.justificativa|default_if_none:"Não há."}}</p>
+            <p><strong>Responsável:</strong> {{req.chefe}}</p>
+            <p><strong>Cargo:</strong> {{req.cargo_chefe}}</p>            
+        </div>
+    </div>
+</div>
+{% else %}
+    {%if req.arquivado %}
+        <div class="col-md-8 mx-auto mb-8">
+            <div class="card bg-secondary text-white">
+                <div class="card-header bg-secondary">
+                    <h4><strong>Concluído sem manifestação do superior hierárquico.</strong></h4>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+</div>
+-->
+
+{% endblock %}
