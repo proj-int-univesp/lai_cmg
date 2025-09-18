@@ -24,6 +24,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'req_info' %}">Requerer Informação</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'meus_ped_infos' %}">Meus Pedidos</a>
+                        </li>                        
                     {% endif %}
 
                     {% if user.funcionario.analisa_ped_info %}
@@ -48,44 +51,24 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'ped_infos_resposta' %}">Responder Pedidos</a>
                         </li>
-                    {% endif %}                     
-
-                    {% if user.funcionario.tem_cargo_comum %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="m-abonadasDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Minhas Abonadas</a>
-                        <ul class="dropdown-menu" aria-labelledby="m-abonadasDropdown">
-                            <li><a class="dropdown-item" href="{% url 'req_abonada' %}">Requerer</a></li>
-                            <li><a class="dropdown-item" href="{% url 'abonadas_cancelamento' %}">Cancelar</a></li>
-                            <li><a class="dropdown-item" href="{% url 'abonadas_anual' %}">Consultar</a></li>
-                        </ul>
-                    </li>
+                    {% endif %}
+                    
+                    {% if user.funcionario.responde_recurso_1 %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_resp_rec_1' %}">Responder Recursos em 1ª Instância</a>
+                        </li>
                     {% endif %}
 
-                    {% if user.funcionario.tem_cargo_chefia %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="m-equipeDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Minha Equipe</a>
-                        <ul class="dropdown-menu" aria-labelledby="m-equipeDropdown">
-                            <li><a class="dropdown-item" href="{% url 'abonadas_despacho' %}">Despachar Requerimentos</a></li>
-                            <li><a class="dropdown-item" href="{% url 'abonadas_futuras' %}">Abonadas Futuras</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-
-                    {% if user.funcionario.faz_gestao_pessoas %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="g-pessoasDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Gestão de Pessoas</a>
-                        <ul class="dropdown-menu" aria-labelledby="g-pessoasDropdown">
-                            <li><a class="dropdown-item" href="{% url 'abonadas_arquivamento' %}">Registrar e Arquivar</a></li>
-                            <li><a class="dropdown-item" href="{% url 'abonadas_geral' %}">Visão Geral</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sol_rel_abon_periodo' %}">Relatório por Período</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
+                    {% if user.funcionario.responde_recurso_2 %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_resp_rec_2' %}">Responder Recursos em 2ª Instância</a>
+                        </li>
+                    {% endif %}                  
 
                     {% if user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/">Configurações</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">Configurações</a>
+                        </li>
                     {% endif %}
                 </ul>
                 

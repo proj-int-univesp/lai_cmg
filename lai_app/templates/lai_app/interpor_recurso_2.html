@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% block title %}Resposta ao Pedido de Informação{% endblock %}
+{% block title %}Interposição de Recurso em Segunda Instância{% endblock %}
 {% block content %}
-<h3 class="mb-4 text-light bg-dark p-3 rounded text-center">Resposta ao Pedido de Informação</h3>
+<h3 class="mb-4 text-light bg-dark p-3 rounded text-center">Interposição de Recurso em Segunda Instância</h3>
 <div class="row">
     <div class="col-md-8 mx-auto mb-8">
         <div class="card bg-secondary text-white">
@@ -19,13 +19,30 @@
         </div>
     </div>
 </div>
+<br>
+<div class="row">
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">        
+        <div class="card-header text-white bg-danger">
+            <h4><strong>Resposta ao Pedido: Indeferido</strong></h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_recurso_1}}</p>
+            <p><strong>Justificativa:</strong> {{ped_info.just_resp_recurso_1|default_if_none:"Não há."}}</p>
+            <p><strong>Responsável:</strong> {{ped_info.func_resp_recurso_1}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_resp_recurso_1.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_resp_recurso_1.lotacao}}</p>  
+        </div>
+    </div>
+</div>
+</div>
 <div class="container mt-4">
     <div class="bg-light p-4 rounded shadow">
         <form method="post" class="text-dark">
             {% csrf_token %}
             {{ form|crispy }}
             <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary">Responder</button>
+                <button type="submit" class="btn btn-primary">Recorrer</button>
             </div>
         </form>
     </div>

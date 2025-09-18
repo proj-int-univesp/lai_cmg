@@ -1,4 +1,4 @@
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,7 +7,9 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 from django.db import IntegrityError
 
-from .forms import AnaliseInicialForm, CidadaoForm, FornecInfoForm, ParecerPedInfoForm, ReqInformacaoForm, RespostaPedInfoForm
+from .forms import (AnaliseInicialForm, CidadaoForm, FornecInfoForm, ParecerPedInfoForm, 
+                    RecursoPrimInstForm, RecursoSegInstForm, ReqInformacaoForm, RespostaPedInfoForm, 
+                    RespostaRecPrimInstForm, RespostaRecSegInstForm)
 from .models import Configuracao, PedidoInformacao
 
 
@@ -77,6 +79,30 @@ class AnaliseInicialPedInfo(LoginRequiredMixin, FormView):
         
         return kwargs
 
+class ConsultaMeusPedInfos(LoginRequiredMixin, ListView):
+
+    model = PedidoInformacao
+    template_name = 'lai_app/ped_infos_cidadao.html'
+    context_object_name = 'ped_infos'
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+
+        usuario = request.user
+        
+        if (hasattr(usuario, 'cidadao')):                        
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")  
+
+    def get_queryset(self):
+
+        queryset = PedidoInformacao.objects.filter(
+            requerente=self.request.user.cidadao).order_by('data_pedido')
+        
+        return queryset
+
 class ConsultaPedInfosAnaliseInicial(LoginRequiredMixin, ListView):
 
     model = PedidoInformacao
@@ -104,7 +130,7 @@ class ConsultaPedInfosAnaliseInicial(LoginRequiredMixin, ListView):
 class ConsultaPedInfosFornecInfo(LoginRequiredMixin, ListView):
 
     model = PedidoInformacao
-    template_name = 'lai_app/ped_infos_resposta.html'
+    template_name = 'lai_app/ped_infos_fornecimento.html'
     context_object_name = 'ped_infos'
     paginate_by = 10
 
@@ -177,6 +203,56 @@ class ConsultaPedInfosRespInicial(LoginRequiredMixin, ListView):
         
         return queryset
 
+class ConsultaPedInfosRecPrimInst(LoginRequiredMixin, ListView):
+
+    model = PedidoInformacao
+    template_name = 'lai_app/ped_infos_resp_rec_1.html'
+    context_object_name = 'ped_infos'
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+
+        usuario = request.user
+        
+        if (hasattr(usuario, 'funcionario') and
+            usuario.funcionario.responde_recurso_1):                        
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")  
+
+    def get_queryset(self):
+
+        queryset = PedidoInformacao.objects.filter(
+            situacao='AR').order_by('data_recurso_1')
+        
+        return queryset
+    
+class ConsultaPedInfosRecSegInst(LoginRequiredMixin, ListView):
+
+    model = PedidoInformacao
+    template_name = 'lai_app/ped_infos_resp_rec_2.html'
+    context_object_name = 'ped_infos'
+    paginate_by = 10
+
+    def dispatch(self, request, *args, **kwargs):
+
+        usuario = request.user
+        
+        if (hasattr(usuario, 'funcionario') and
+            usuario.funcionario.responde_recurso_2):                        
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")  
+
+    def get_queryset(self):
+
+        queryset = PedidoInformacao.objects.filter(
+            situacao='AF').order_by('data_recurso_2')
+        
+        return queryset
+
 class DetalhesPedInfo(LoginRequiredMixin, DetailView):
 
     model = PedidoInformacao
@@ -206,6 +282,14 @@ class DetalhesPedInfo(LoginRequiredMixin, DetailView):
             (req.situacao == 'AR' and usuario.funcionario.lotacao == config.setor_recurso_1) or
         # Verifica a fase do processo e se o usuário é do setor responsável por analisar o recurso em 2ª instância
             (req.situacao == 'AF' and usuario.funcionario.lotacao == config.setor_recurso_2))):
+
+            if(hasattr(usuario, 'cidadao')):
+                if (req.prazo_recurso_1 is None and req.situacao == 'PR' and req.resp_inicial == False):
+                    req.prazo_recurso_1 = dt.now() + timedelta(days=10)
+                    req.save()
+                if (req.prazo_recurso_2 is None and req.situacao == 'RR' and req.resp_recurso_1 == False):
+                    req.prazo_recurso_2 = dt.now() + timedelta(days=10)
+                    req.save()
             
             return super().dispatch(request, *args, **kwargs)            
         
@@ -306,6 +390,96 @@ class FornecimentoInformacao(LoginRequiredMixin, FormView):
         
         return kwargs
 
+class InterporRecursoPrimeiraInst(LoginRequiredMixin, FormView):
+
+    form_class = RecursoPrimInstForm
+    template_name = 'lai_app/interpor_recurso_1.html'
+
+    def dispatch(self, request, *args, **kwargs):
+
+        ped_info = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        usuario = request.user
+                
+        if (ped_info.oportunidade_recurso_1 and 
+            hasattr(usuario, 'cidadao') and
+            ped_info.requerente == usuario.cidadao):
+            
+            return super().dispatch(request, *args, **kwargs)
+        
+        else:
+            
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")              
+        
+    def form_valid(self, form):
+        
+        ped_info = form.save(commit=False)
+        ped_info.data_recurso_1 = dt.now()
+        ped_info.situacao = 'AR' 
+
+        ped_info.save()
+
+        return redirect('detalhes_ped_info', pk=ped_info.pk)
+
+    def get_context_data(self, **kwargs):
+        # Adiciona o objeto ao contexto para exibir no template
+        context = super().get_context_data(**kwargs)
+        context['ped_info'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return context
+
+    def get_form_kwargs(self):
+        # Adiciona o objeto ao form para ser validado
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return kwargs
+
+class InterporRecursoSegundaInst(LoginRequiredMixin, FormView):
+
+    form_class = RecursoSegInstForm
+    template_name = 'lai_app/interpor_recurso_2.html'
+
+    def dispatch(self, request, *args, **kwargs):
+
+        ped_info = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        usuario = request.user
+                
+        if (ped_info.oportunidade_recurso_2 and 
+            hasattr(usuario, 'cidadao') and
+            ped_info.requerente == usuario.cidadao):
+            
+            return super().dispatch(request, *args, **kwargs)
+        
+        else:
+            
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")              
+        
+    def form_valid(self, form):
+        
+        ped_info = form.save(commit=False)
+        ped_info.data_recurso_2 = dt.now()
+        ped_info.situacao = 'AF' 
+
+        ped_info.save()
+
+        return redirect('detalhes_ped_info', pk=ped_info.pk)
+
+    def get_context_data(self, **kwargs):
+        # Adiciona o objeto ao contexto para exibir no template
+        context = super().get_context_data(**kwargs)
+        context['ped_info'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return context
+
+    def get_form_kwargs(self):
+        # Adiciona o objeto ao form para ser validado
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return kwargs
+
 class RequererInformacao(LoginRequiredMixin, FormView):
 
     form_class = ReqInformacaoForm
@@ -369,6 +543,118 @@ class RespostaInicialPedInfo(LoginRequiredMixin, FormView):
         ped_info.save()
 
         return super(RespostaInicialPedInfo, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        # Adiciona o objeto ao contexto para exibir no template
+        context = super().get_context_data(**kwargs)
+        context['ped_info'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return context
+
+    def get_form_kwargs(self):
+        # Adiciona o objeto ao form para ser validado
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return kwargs
+
+class RespostaRecursoPrimeiraInst(LoginRequiredMixin, FormView):
+
+    form_class = RespostaRecPrimInstForm
+    template_name = 'lai_app/resp_recurso_1.html'
+    success_url = reverse_lazy('ped_infos_resp_rec_1')
+
+    def dispatch(self, request, *args, **kwargs):
+
+        ped_info = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        usuario = request.user
+                
+        if (ped_info.situacao == 'AR' and 
+            hasattr(usuario, 'funcionario') and
+            usuario.funcionario.responde_recurso_1):
+
+            return super().dispatch(request, *args, **kwargs)
+        
+        else:
+            
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")              
+        
+    def form_valid(self, form):
+        
+        ped_info = form.save(commit=False)
+
+        if ped_info.resp_recurso_1==False:
+
+            justificativa = ped_info.just_resp_recurso_1
+            
+            if not justificativa or justificativa.strip() == "":
+                form.add_error(None, "A justificativa é obrigatória para indeferimento!")
+                return super(RespostaRecursoPrimeiraInst, self).form_invalid(form)
+        
+        ped_info.func_resp_recurso_1 = self.request.user.funcionario
+        ped_info.data_resp_recurso_1 = dt.now()
+        ped_info.situacao = 'RR'
+
+        ped_info.save()
+
+        return super(RespostaRecursoPrimeiraInst, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        # Adiciona o objeto ao contexto para exibir no template
+        context = super().get_context_data(**kwargs)
+        context['ped_info'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return context
+
+    def get_form_kwargs(self):
+        # Adiciona o objeto ao form para ser validado
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        
+        return kwargs
+
+class RespostaRecursoSegundaInst(LoginRequiredMixin, FormView):
+
+    form_class = RespostaRecSegInstForm
+    template_name = 'lai_app/resp_recurso_2.html'
+    success_url = reverse_lazy('ped_infos_resp_rec_2')
+
+    def dispatch(self, request, *args, **kwargs):
+
+        ped_info = PedidoInformacao.objects.get(pk=self.kwargs['pk'])
+        usuario = request.user
+                
+        if (ped_info.situacao == 'AF' and 
+            hasattr(usuario, 'funcionario') and
+            usuario.funcionario.responde_recurso_2):
+
+            return super().dispatch(request, *args, **kwargs)
+        
+        else:
+            
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")              
+        
+    def form_valid(self, form):
+        
+        ped_info = form.save(commit=False)
+
+        if ped_info.resp_recurso_2==False:
+
+            justificativa = ped_info.just_resp_recurso_2
+            
+            if not justificativa or justificativa.strip() == "":
+                form.add_error(None, "A justificativa é obrigatória para indeferimento!")
+                return super(RespostaRecursoSegundaInst, self).form_invalid(form)
+        
+        ped_info.func_resp_recurso_2 = self.request.user.funcionario
+        ped_info.data_resp_recurso_2 = dt.now()
+        ped_info.situacao = 'RF'
+
+        ped_info.save()
+
+        return super(RespostaRecursoSegundaInst, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         # Adiciona o objeto ao contexto para exibir no template

@@ -54,6 +54,24 @@ class ParecerPedInfoForm(forms.ModelForm):
         model = PedidoInformacao
         fields = ['parecer']
 
+class RecursoPrimInstForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['recurso_1']
+        widgets = {
+            'recurso_1': forms.Textarea(attrs={'rows': 5, 'cols': 40}),
+        }
+
+class RecursoSegInstForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['recurso_2']
+        widgets = {
+            'recurso_2': forms.Textarea(attrs={'rows': 5, 'cols': 40}),
+        }
+
 class ReqInformacaoForm(forms.ModelForm):
 
     class Meta:
@@ -68,3 +86,15 @@ class RespostaPedInfoForm(forms.ModelForm):
     class Meta:
         model = PedidoInformacao
         fields = ['resp_inicial', 'just_resp_inicial']
+
+class RespostaRecPrimInstForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['resp_recurso_1', 'just_resp_recurso_1']
+
+class RespostaRecSegInstForm(forms.ModelForm):
+
+    class Meta:
+        model = PedidoInformacao
+        fields = ['resp_recurso_2', 'just_resp_recurso_2']

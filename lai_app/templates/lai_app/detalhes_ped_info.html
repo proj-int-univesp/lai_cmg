@@ -9,50 +9,197 @@
         <div class="card-header bg-primary">
             <h4><strong>Pedido de Informações nº {{ped_info.num_registro}}/{{ped_info.data_pedido|date:'Y'}}</strong></h4>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-dark">
             <p><strong>Data do Pedido:</strong> {{ped_info.data_pedido}}</p>
             <p><strong>Requerente:</strong> {{ped_info.requerente.nome}}</p>
             <p><strong>Título:</strong> {{ped_info.titulo}}</p>
             <p><strong>Descrição:</strong> {{ped_info.descricao}}</p>
             <p><strong>Situação:</strong> {{ped_info.get_situacao_display}}</p>
+            {% if ped_info.data_resp_inicial %}
+            <p><strong>Resposta ao Pedido:</strong> {{ped_info.resp_inicial|yesno:"Deferido, Indeferido"}}</p>
+                {% if ped_info.oportunidade_recurso_1 %}
+                    <p class="text-warning"><a href="{% url 'recurso1_ped_info' ped_info.id %}">Interpor Recurso em 1ª Instância?</a> (Prazo: {{ped_info.prazo_recurso_1}})</p>
+                {% endif %}
+            {% endif %}
+            {% if ped_info.data_resp_recurso_1 %}
+            <p><strong>Resposta ao Recurso em 1ª Instância:</strong> {{ped_info.resp_recurso_1|yesno:"Deferido, Indeferido"}}</p>
+                {% if ped_info.oportunidade_recurso_2 %}
+                    <p class="text-warning"><a href="{% url 'recurso2_ped_info' ped_info.id %}">Interpor Recurso em 2ª Instância?</a> (Prazo: {{ped_info.prazo_recurso_2}})</p>
+                {% endif %}
+            {% endif %}
+            {% if ped_info.data_resp_recurso_2 %}
+            <p><strong>Resposta ao Recurso em 2ª Instância:</strong> {{ped_info.resp_recurso_2|yesno:"Deferido, Indeferido"}}</p>                
+            {% endif %}
+            {% if user.cidadao %}
+                {% if ped_info.resp_inicial or ped_info.resp_recurso_1 or ped_info.resp_recurso_2 %}                    
+                    <p><a href="{{ped_info.arquivo_info.url}}" target="_blank" rel="noopener noreferrer">Acessar Informação Solicitada</a></p>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>
 </div>
 <br>
-
-<!--
 <div class="row">
-{% if req.momento_despacho %}
+{% if ped_info.data_encam %}
 <div class="col-md-8 mx-auto mb-8">
-    <div class="card bg-secondary text-white">
-        {% if req.despacho %} 
+    <div class="card bg-secondary text-white">        
+        <div class="card-header text-white bg-secondary">
+            <h4><strong>Encaminhamento para {{ped_info.setor_info}}</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data do Encaminhamento:</strong> {{ped_info.data_encam}}</p>
+            <p><strong>Responsável:</strong> {{ped_info.func_adm}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_adm.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_adm.lotacao}}</p>  
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
+<div class="row">
+{% if ped_info.data_fornec %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">        
+        <div class="card-header text-white bg-secondary">
+            <h4><strong>Levantamento das Informações Solicitadas</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data do Encaminhamento:</strong> {{ped_info.data_fornec}}</p>
+            {% if user.funcionario %}
+            <p><a href="{{ped_info.arquivo_info.url}}" target="_blank" rel="noopener noreferrer">Informação Levantada pelo Setor</a></p>
+            <p><strong>Observações:</strong> {{ped_info.observacoes_forn|default:"Não há."}}</p>
+            {% endif %}
+            <p><strong>Responsável:</strong> {{ped_info.func_fornec}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_fornec.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_fornec.lotacao}}</p>  
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
+<div class="row">
+{% if ped_info.data_parecer %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">        
+        <div class="card-header text-white bg-secondary">
+            <h4><strong>Emissão do Parecer Jurídico</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data do Encaminhamento:</strong> {{ped_info.data_parecer}}</p>
+            <p><strong>Parecer:</strong> {{ped_info.parecer}}</p>
+            <p><strong>Responsável:</strong> {{ped_info.func_parecer}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_parecer.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_parecer.lotacao}}</p>  
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
+<div class="row">
+{% if ped_info.data_resp_inicial %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">        
+        {% if ped_info.resp_inicial %} 
         <div class="card-header text-white bg-success">
         {% else %}
         <div class="card-header text-white bg-danger">
         {% endif %}
-            <h4><strong>Despacho: {{req.despacho|yesno:"Deferido, Indeferido"}}</strong></h4>
+            <h4><strong>Resposta ao Pedido: {{ped_info.resp_inicial|yesno:"Deferido, Indeferido"}}</strong></h4>
         </div>
-        <div class="card-body">
-            <p><strong>Data do Despacho:</strong> {{req.momento_despacho}}</p>
-            <p><strong>Justificativa:</strong> {{req.justificativa|default_if_none:"Não há."}}</p>
-            <p><strong>Responsável:</strong> {{req.chefe}}</p>
-            <p><strong>Cargo:</strong> {{req.cargo_chefe}}</p>            
+        <div class="card-body bg-dark">
+            <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_inicial}}</p>
+            <p><strong>Justificativa:</strong> {{ped_info.just_resp_inicial|default_if_none:"Não há."}}</p>
+            <p><strong>Responsável:</strong> {{ped_info.func_resp_inicial}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_resp_inicial.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_resp_inicial.lotacao}}</p>
+            <p><strong>Prazo para Recurso da Decisão:</strong> {{ped_info.prazo_recurso_1}}</p>
         </div>
     </div>
 </div>
-{% else %}
-    {%if req.arquivado %}
-        <div class="col-md-8 mx-auto mb-8">
-            <div class="card bg-secondary text-white">
-                <div class="card-header bg-secondary">
-                    <h4><strong>Concluído sem manifestação do superior hierárquico.</strong></h4>
-                </div>
-            </div>
-        </div>
-    {% endif %}
 {% endif %}
 </div>
--->
-
+<br>
+<div class="row">
+{% if ped_info.data_recurso_1 %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">
+        <div class="card-header bg-primary">
+            <h4><strong>Recurso em 1ª Instância</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data do Recurso:</strong> {{ped_info.data_recurso_1}}</p>
+            <p><strong>Recurso:</strong> {{ped_info.recurso_1}}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
+<div class="row">
+{% if ped_info.data_resp_recurso_1 %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">        
+        {% if ped_info.resp_recurso_1 %} 
+        <div class="card-header text-white bg-success">
+        {% else %}
+        <div class="card-header text-white bg-danger">
+        {% endif %}
+            <h4><strong>Resposta ao Recurso em 1ª Instância: {{ped_info.resp_recurso_1|yesno:"Deferido, Indeferido"}}</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_recurso_1}}</p>
+            <p><strong>Justificativa:</strong> {{ped_info.just_resp_recurso_1|default_if_none:"Não há."}}</p>
+            <p><strong>Responsável:</strong> {{ped_info.func_resp_recurso_1}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_resp_recurso_1.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_resp_recurso_1.lotacao}}</p>
+            <p><strong>Prazo para Recurso em 2ª Instância:</strong> {{ped_info.prazo_recurso_2}}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
+<div class="row">
+{% if ped_info.data_recurso_2 %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">
+        <div class="card-header bg-primary">
+            <h4><strong>Recurso em 2ª Instância</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data do Recurso:</strong> {{ped_info.data_recurso_2}}</p>
+            <p><strong>Recurso:</strong> {{ped_info.recurso_2}}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
+<div class="row">
+{% if ped_info.data_resp_recurso_2 %}
+<div class="col-md-8 mx-auto mb-8">
+    <div class="card bg-secondary text-white">        
+        {% if ped_info.resp_recurso_2 %} 
+        <div class="card-header text-white bg-success">
+        {% else %}
+        <div class="card-header text-white bg-danger">
+        {% endif %}
+            <h4><strong>Resposta ao Recurso em 2ª Instância: {{ped_info.resp_recurso_2|yesno:"Deferido, Indeferido"}}</strong></h4>
+        </div>
+        <div class="card-body bg-dark">
+            <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_recurso_2}}</p>
+            <p><strong>Justificativa:</strong> {{ped_info.just_resp_recurso_2|default:"Não há."}}</p>
+            <p><strong>Responsável:</strong> {{ped_info.func_resp_recurso_2}}</p>
+            <p><strong>Cargo:</strong> {{ped_info.func_resp_recurso_2.cargo}}</p>
+            <p><strong>Setor:</strong> {{ped_info.func_resp_recurso_2.lotacao}}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+</div>
+<br>
 {% endblock %}

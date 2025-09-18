@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% block title %}Resposta ao Pedido de Informação{% endblock %}
+{% block title %}Resposta ao Recurso em 2ª Instância{% endblock %}
 {% block content %}
-<h3 class="mb-4 text-light bg-dark p-3 rounded text-center">Resposta ao Pedido de Informação</h3>
+<h3 class="mb-4 text-light bg-dark p-3 rounded text-center">Resposta ao Recurso em 2ª Instância</h3>
 <div class="row">
     <div class="col-md-8 mx-auto mb-8">
         <div class="card bg-secondary text-white">
@@ -10,10 +10,8 @@
                 <h4><strong><a href="{% url 'detalhes_ped_info' ped_info.id %}" style="color: white;">Pedido de Informação nº {{ped_info.num_registro}}/{{ped_info.data_pedido|date:'Y'}}</a></strong></h4>
             </div>
             <div class="card-body">
-                <p><strong>Data do Pedido:</strong> {{ped_info.data_pedido}}</p>
-                <p><strong>Requerente:</strong> {{ped_info.requerente.nome}}</p>
-                <p><strong>Título:</strong> {{ped_info.titulo}}</p>
-                <p><strong>Descrição:</strong> {{ped_info.descricao}}</p>
+                <p><strong>Data do Recurso:</strong> {{ped_info.data_recurso_2}}</p>
+                <p><strong>Recurso:</strong> {{ped_info.recurso_2}}</p>
                 <p><strong>Situação:</strong> {{ped_info.get_situacao_display}}</p>                
             </div>
         </div>

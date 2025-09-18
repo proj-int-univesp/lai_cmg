@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.utils.timezone import now
 from datetime import datetime as dt
 
 class SingletonModel(models.Model):
@@ -112,6 +113,20 @@ class Funcionario(models.Model):
             return False
         
         return True
+    
+    def responde_recurso_1(self):
+
+        if self.lotacao != Configuracao.objects.get(id=1).setor_recurso_1:
+            return False
+        
+        return True
+    
+    def responde_recurso_2(self):
+
+        if self.lotacao != Configuracao.objects.get(id=1).setor_recurso_2:
+            return False
+        
+        return True
 
     def __str__(self):
         return self.nome + " (" + self.matricula + ")"
@@ -208,6 +223,8 @@ class PedidoInformacao(models.Model):
                                             blank=True, null=True, related_name='func_resp_inicial')
 
     # Campos do Recurso em 1ª Instância
+    prazo_recurso_1 = models.DateTimeField(blank=True, null=True,
+                                          verbose_name="Prazo para Recurso em 1ª Instância")
     recurso_1 = models.TextField(blank=True, null=True,
                                  verbose_name="Recurso em 1ª Instância")
     data_recurso_1 = models.DateTimeField(blank=True, null=True,
@@ -225,6 +242,8 @@ class PedidoInformacao(models.Model):
                                             blank=True, null=True, related_name='func_resp_recurso_1')
     
     # Campos do Recurso em 2ª Instância
+    prazo_recurso_2 = models.DateTimeField(blank=True, null=True,
+                                          verbose_name="Prazo para Recurso em 2ª Instância")
     recurso_2 = models.TextField(blank=True, null=True,
                                     verbose_name="Recurso em 2ª Instância")
     data_recurso_2 = models.DateTimeField(blank=True, null=True,
@@ -240,6 +259,20 @@ class PedidoInformacao(models.Model):
     func_resp_recurso_2 = models.ForeignKey('Funcionario', on_delete=models.PROTECT,
                                             verbose_name="Funcionário da Resposta ao Recurso em 2ª Instância", 
                                             blank=True, null=True, related_name='func_resp_recurso_2')
+
+    def oportunidade_recurso_1(self):
+        if (self.prazo_recurso_1 and 
+            now() <= self.prazo_recurso_1 and
+            self.situacao == 'PR'):
+                return True
+        return False
+    
+    def oportunidade_recurso_2(self):
+        if (self.prazo_recurso_2 and 
+            now() <= self.prazo_recurso_2 and
+            self.situacao == 'RR'):
+                return True
+        return False
     
     def save(self, *args, **kwargs):
         
