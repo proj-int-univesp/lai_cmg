@@ -36,6 +36,7 @@ urlpatterns = [
     path('ped-infos/analisar/', views.ConsultaPedInfosAnaliseInicial.as_view(), name='ped_infos_analise'),
     path('ped-infos/cidadao/', views.ConsultaMeusPedInfos.as_view(), name='meus_ped_infos'),
     path('ped-infos/fornecer-info/', views.ConsultaPedInfosFornecInfo.as_view(), name='ped_infos_fornecimento'),
+    path('ped-infos/geral/', views.ConsultaPedInfosGeral.as_view(), name='ped_infos_geral'),
     path('ped-infos/parecer/', views.ConsultaPedInfosParecer.as_view(), name='ped_infos_parecer'),
     path('ped-infos/resposta/', views.ConsultaPedInfosRespInicial.as_view(), name='ped_infos_resposta'),
     path('ped-infos/resp-rec-1/', views.ConsultaPedInfosRecPrimInst.as_view(), name='ped_infos_resp_rec_1'),

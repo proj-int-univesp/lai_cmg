@@ -9,7 +9,7 @@
         <div class="card-header bg-primary">
             <h4><strong>Pedido de Informações nº {{ped_info.num_registro}}/{{ped_info.data_pedido|date:'Y'}}</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data do Pedido:</strong> {{ped_info.data_pedido}}</p>
             <p><strong>Requerente:</strong> {{ped_info.requerente.nome}}</p>
             <p><strong>Título:</strong> {{ped_info.titulo}}</p>
@@ -47,7 +47,7 @@
         <div class="card-header text-white bg-secondary">
             <h4><strong>Encaminhamento para {{ped_info.setor_info}}</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data do Encaminhamento:</strong> {{ped_info.data_encam}}</p>
             <p><strong>Responsável:</strong> {{ped_info.func_adm}}</p>
             <p><strong>Cargo:</strong> {{ped_info.func_adm.cargo}}</p>
@@ -65,7 +65,7 @@
         <div class="card-header text-white bg-secondary">
             <h4><strong>Levantamento das Informações Solicitadas</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data do Encaminhamento:</strong> {{ped_info.data_fornec}}</p>
             {% if user.funcionario %}
             <p><a href="{{ped_info.arquivo_info.url}}" target="_blank" rel="noopener noreferrer">Informação Levantada pelo Setor</a></p>
@@ -87,7 +87,7 @@
         <div class="card-header text-white bg-secondary">
             <h4><strong>Emissão do Parecer Jurídico</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data do Encaminhamento:</strong> {{ped_info.data_parecer}}</p>
             <p><strong>Parecer:</strong> {{ped_info.parecer}}</p>
             <p><strong>Responsável:</strong> {{ped_info.func_parecer}}</p>
@@ -110,7 +110,7 @@
         {% endif %}
             <h4><strong>Resposta ao Pedido: {{ped_info.resp_inicial|yesno:"Deferido, Indeferido"}}</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_inicial}}</p>
             <p><strong>Justificativa:</strong> {{ped_info.just_resp_inicial|default_if_none:"Não há."}}</p>
             <p><strong>Responsável:</strong> {{ped_info.func_resp_inicial}}</p>
@@ -130,7 +130,7 @@
         <div class="card-header bg-primary">
             <h4><strong>Recurso em 1ª Instância</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data do Recurso:</strong> {{ped_info.data_recurso_1}}</p>
             <p><strong>Recurso:</strong> {{ped_info.recurso_1}}</p>
         </div>
@@ -150,7 +150,7 @@
         {% endif %}
             <h4><strong>Resposta ao Recurso em 1ª Instância: {{ped_info.resp_recurso_1|yesno:"Deferido, Indeferido"}}</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_recurso_1}}</p>
             <p><strong>Justificativa:</strong> {{ped_info.just_resp_recurso_1|default_if_none:"Não há."}}</p>
             <p><strong>Responsável:</strong> {{ped_info.func_resp_recurso_1}}</p>
@@ -170,7 +170,7 @@
         <div class="card-header bg-primary">
             <h4><strong>Recurso em 2ª Instância</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data do Recurso:</strong> {{ped_info.data_recurso_2}}</p>
             <p><strong>Recurso:</strong> {{ped_info.recurso_2}}</p>
         </div>
@@ -190,7 +190,7 @@
         {% endif %}
             <h4><strong>Resposta ao Recurso em 2ª Instância: {{ped_info.resp_recurso_2|yesno:"Deferido, Indeferido"}}</strong></h4>
         </div>
-        <div class="card-body bg-dark">
+        <div class="card-body">
             <p><strong>Data da Resposta:</strong> {{ped_info.data_resp_recurso_2}}</p>
             <p><strong>Justificativa:</strong> {{ped_info.just_resp_recurso_2|default:"Não há."}}</p>
             <p><strong>Responsável:</strong> {{ped_info.func_resp_recurso_2}}</p>

@@ -12,7 +12,7 @@
 <body class="bg-dark text-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'menu' %}">Sistema de Acesso a Informações Públicas</a>
+            <a class="navbar-brand text-warning" href="{% url 'menu' %}">Sistema de Acesso a Informações Públicas</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -32,6 +32,9 @@
                     {% if user.funcionario.analisa_ped_info %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'ped_infos_analise' %}">Analisar Pedidos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ped_infos_geral' %}">Consulta Geral</a>
                         </li>
                     {% endif %}
 

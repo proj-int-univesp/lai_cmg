@@ -84,7 +84,6 @@ class ConsultaMeusPedInfos(LoginRequiredMixin, ListView):
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_cidadao.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -108,7 +107,6 @@ class ConsultaPedInfosAnaliseInicial(LoginRequiredMixin, ListView):
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_analise.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -132,7 +130,6 @@ class ConsultaPedInfosFornecInfo(LoginRequiredMixin, ListView):
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_fornecimento.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -153,12 +150,85 @@ class ConsultaPedInfosFornecInfo(LoginRequiredMixin, ListView):
         
         return queryset
 
+class ConsultaPedInfosGeral(LoginRequiredMixin, ListView):
+
+    model = PedidoInformacao
+    template_name = 'lai_app/ped_infos_geral.html'
+    context_object_name = 'ped_infos'
+
+    def dispatch(self, request, *args, **kwargs):
+
+        usuario = request.user
+
+        if (hasattr(usuario, 'funcionario') and usuario.funcionario.analisa_ped_info):                        
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("Você não tem permissão para acessar esta página."
+                                        " Contate o administrador do sistema.")  
+
+    def get_queryset(self):
+        # Obtém o queryset base
+
+        queryset = PedidoInformacao.objects.all()
+        
+        # Obtém os parâmetros de filtro da URL (GET)
+        numero = self.request.GET.get('numero')
+        ano = self.request.GET.get('ano')
+        requerente = self.request.GET.get('requerente')
+        titulo = self.request.GET.get('titulo')
+        data_inicio = self.request.GET.get('data_inicio')
+        data_fim = self.request.GET.get('data_fim')
+        situacao = self.request.GET.get('situacao')
+        ordenacao = self.request.GET.get('ordenacao')
+
+        filtros = 0
+        
+        if numero and numero.isdigit():
+            queryset = queryset.filter(num_registro=int(numero))
+            filtros += 1
+        if ano and ano.isdigit():
+            queryset = queryset.filter(data_pedido__year=int(ano))
+            filtros += 1
+        if data_inicio:
+            queryset = queryset.filter(data_pedido__gte=data_inicio)
+            filtros += 1
+        if data_fim:
+            queryset = queryset.filter(data_pedido__lte=data_fim)
+            filtros += 1    
+        if requerente:
+            queryset = queryset.filter(requerente__nome__icontains=requerente)
+            filtros += 1
+        if titulo:
+            queryset = queryset.filter(titulo__icontains=titulo)
+            filtros += 1
+        if situacao:
+            queryset = queryset.filter(situacao=situacao)
+            filtros += 1
+        
+        if ordenacao in ['data_pedido', '-data_pedido', 'requerente__nome', '-requerente__nome']:
+            queryset = queryset.order_by(ordenacao)
+        else:
+            queryset = queryset.order_by('-data_pedido')
+
+        if filtros == 0:
+            queryset = queryset[:20]
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        # Adiciona os filtros ao contexto para manter os valores no template
+        context = super().get_context_data(**kwargs)      
+
+        context['filtros'] = self.request.GET
+        context['ordenacao'] = self.request.GET.get('ordenacao', '-data_pedido')  # Ordenação padrão
+        
+        return context
+
 class ConsultaPedInfosParecer(LoginRequiredMixin, ListView):
 
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_parecer.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -183,7 +253,6 @@ class ConsultaPedInfosRespInicial(LoginRequiredMixin, ListView):
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_resposta.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -208,7 +277,6 @@ class ConsultaPedInfosRecPrimInst(LoginRequiredMixin, ListView):
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_resp_rec_1.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -233,7 +301,6 @@ class ConsultaPedInfosRecSegInst(LoginRequiredMixin, ListView):
     model = PedidoInformacao
     template_name = 'lai_app/ped_infos_resp_rec_2.html'
     context_object_name = 'ped_infos'
-    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
 

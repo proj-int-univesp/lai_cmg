@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Consulta Geral de Pedidos de Informação{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-light bg-dark p-3 rounded text-center">Consulta Geral de Pedidos de Informação</h2>
+
+    <form method="get" class="bg-light p-4 rounded shadow">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <label for="numero" class="form-label text-dark">Número:</label>
+                <input type="number" id="numero" name="numero" class="form-control" value="{{ filtros.numero }}">
+            </div>
+            <div class="col-md-2">
+                <label for="ano" class="form-label text-dark">Ano:</label>
+                <input type="number" id="ano" name="ano" class="form-control" value="{{ filtros.ano }}">
+            </div>
+            <div class="col-md-4">
+                <label for="requerente" class="form-label text-dark">Requerente:</label>
+                <input type="text" id="requerente" name="requerente" class="form-control" value="{{ filtros.requerente }}">
+            </div>
+            <div class="col-md-4">
+                <label for="titulo" class="form-label text-dark">Título:</label>
+                <input type="text" id="titulo" name="titulo" class="form-control" value="{{ filtros.titulo }}">
+            </div>
+        </div>
+        <div class="row g-3 mt-2">            
+            <div class="col-md-3">
+                <label for="data_inicio" class="form-label text-dark">Data Inicial:</label>
+                <input type="date" id="data_inicio" name="data_inicio" class="form-control" value="{{ filtros.data_inicio }}">
+            </div>
+            <div class="col-md-3">
+                <label for="data_fim" class="form-label text-dark">Data Final:</label>
+                <input type="date" id="data_fim" name="data_fim" class="form-control" value="{{ filtros.data_fim }}">
+            </div>
+            <div class="col-md-3">
+                <label for="situacao" class="form-label text-dark">Situação:</label><br>
+                <select id="situacao" name="situacao" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="AI" {% if filtros.situacao == "AI" %}selected{% endif %}>Análise Inicial</option>
+                    <option value="BI" {% if filtros.situacao == "BI" %}selected{% endif %}>Buscando Informações</option>
+                    <option value="EP" {% if filtros.situacao == "EP" %}selected{% endif %}>Elaborando Parecer</option>
+                    <option value="DR" {% if filtros.situacao == "DR" %}selected{% endif %}>Definindo Resposta</option>
+                    <option value="PR" {% if filtros.situacao == "PR" %}selected{% endif %}>Pedido Respondido</option>
+                    <option value="AR" {% if filtros.situacao == "AR" %}selected{% endif %}>Analisando Recurso</option>
+                    <option value="RR" {% if filtros.situacao == "RR" %}selected{% endif %}>Recurso Respondido</option>
+                    <option value="AF" {% if filtros.situacao == "AF" %}selected{% endif %}>Analisando Recurso Final</option>
+                    <option value="RF" {% if filtros.situacao == "RF" %}selected{% endif %}>Recurso Final Respondido</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="ordenacao" class="form-label text-dark">Ordenação:</label><br>
+                <select id="ordenacao" name="ordenacao" class="form-select">
+                    <option value="data_pedido" {% if filtros.ordenacao == 'data_pedido' %}selected{% endif %}>Data (Crescente)</option>
+                    <option value="-data_pedido" {% if not filtros.ordenacao or filtros.ordenacao == '-data_pedido' %}selected{% endif %}>Data (Decrescente)</option>
+                    <option value="requerente__nome" {% if filtros.ordenacao == 'requerente__nome' %}selected{% endif %}>Requerente (Crescente)</option>
+                    <option value="-requerente__nome" {% if filtros.ordenacao == '-requerente__nome' %}selected{% endif %}>Requerente (Decrescente)</option>
+                </select>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-dark table-hover table-striped animate__animated animate__fadeIn">
+            <thead class="thead-light">
+                <tr class="text-center">
+                    <th>Número</th>
+                    <th>Data do Pedido</th>
+                    <th>Requerente</th>
+                    <th>Título</th>
+                    <th>Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ped_info in ped_infos %}
+                <tr class="align-middle text-center">
+                    <td><a href="{% url 'detalhes_ped_info' ped_info.id %}">{{ ped_info.num_registro }}/{{ ped_info.data_pedido|date:'Y' }}</a></td>
+                    <td>{{ ped_info.data_pedido|date:'d/m/y H:i' }}</td>
+                    <td>{{ ped_info.requerente.nome }}</td>
+                    <td>{{ ped_info.titulo }}</td>
+                    <td>{{ ped_info.get_situacao_display }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-warning fw-bold">Nenhuma pedido de informação encontrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
